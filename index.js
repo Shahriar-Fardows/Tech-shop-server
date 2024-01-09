@@ -2,12 +2,13 @@ const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
 const app = express();
-const port = process.env.PORT || 5000;
+const port = 5000;
 
 app.use(cors());
 app.use(express.json());
 
-const uri ="mongodb+srv://techshope:dwIf1lmncChWtH49@cluster0.q76gwva.mongodb.net/?retryWrites=true&w=majority";
+const uri =
+  "mongodb+srv://techshope:dwIf1lmncChWtH49@cluster0.q76gwva.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -18,11 +19,10 @@ const client = new MongoClient(uri, {
   },
 });
 
-
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    client.connect();
 
     const products = client.db("product").collection("productData");
 
@@ -32,27 +32,28 @@ async function run() {
       res.send(AllData);
     });
 
-    app.get('/product' , async(req , res)=>{
+    app.get("/product", async (req, res) => {
       const cursor = products.find();
-      const result = await cursor.toArray()
-      res.send(result)
+      const result = await cursor.toArray();
+      res.send(result);
+    });
 
-    })
-
-    app.get('/product/:id', async(req, res) =>{
+    app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id : new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const product = await products.findOne(query);
-      res.send(product) 
+      res.send(product);
+    });
+   
+    app.get('/products/:brand', async(req, res) =>{
+      const brands = req.params.brand;
+      const query = { brand : brands};
+      const product = await products.find(query).toArray();
+      res.send(product)
     })
-    // app.get('/product/:brand', async(req, res) =>{
-    //   const brand = req.params.brand;
-    //   const query = { brand : brand};
-    //   const product = await products.findOne(query);
-    //   res.send(product) 
-    // })
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
